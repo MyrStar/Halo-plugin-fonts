@@ -6,6 +6,8 @@ export interface FontItem {
   source: string;
   cssUrl: string;
   enabled: boolean;
+  /** 字重，空串表示跟随字体默认 */
+  weight?: string;
 }
 
 export interface Fonts {
@@ -18,4 +20,6 @@ export interface PresetFont {
   family: string;
   cssUrl: string;
   category: string;
+  /** 推荐字重，空串表示跟随字体默认 */
+  weight?: string;
 }

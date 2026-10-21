@@ -49,7 +49,7 @@ public class FontsService {
                     .filter(font -> !Boolean.FALSE.equals(font.enabled()))
                     .map(font -> new FontItem(font.name(), font.displayName(), font.family(),
                         font.source(), applyAccelerator(font.cssUrl(), basic.acceleratorRules()),
-                        font.enabled()))
+                        font.enabled(), font.weight()))
                     .toList();
 
                 var defaultFontName = StringUtils.defaultIfBlank(basic.defaultFont(),
@@ -75,15 +75,14 @@ public class FontsService {
 
                 var styleText = defaultFont == null ? null
                     : buildStyleText(defaultFont.family(), parseSelectors(basic.applySelectors()),
-                        basic.fontWeight());
+                        defaultFont.weight());
 
                 var widget = new Widget(!Boolean.FALSE.equals(basic.widgetEnabled()),
                     StringUtils.defaultIfBlank(basic.widgetPosition(), "bottom-right"),
                     StringUtils.defaultIfBlank(basic.widgetTitle(), "切换字体"));
 
                 return new ResolvedFonts(enabledFonts, cssUrls, defaultFontName,
-                    parseSelectors(basic.applySelectors()),
-                    StringUtils.defaultIfBlank(basic.fontWeight(), ""), styleText, widget);
+                    parseSelectors(basic.applySelectors()), styleText, widget);
             });
     }
 
@@ -124,11 +123,11 @@ public class FontsService {
     /**
      * 生成全局覆盖样式：CSS 变量承载当前字体族，配合 :where() 低特异性 + !important，
      * 既能压过主题普通规则，又允许主题带 !important 的规则覆盖插件。
-     * fontWeight 非空时同步覆盖字重。
+     * 字重按当前默认字体自身配置覆盖，为空则不干预。
      */
-    static String buildStyleText(String defaultFamily, List<String> selectors, String fontWeight) {
-        var weightRule = StringUtils.isBlank(fontWeight) ? ""
-            : "font-weight:" + fontWeight + " !important;";
+    static String buildStyleText(String defaultFamily, List<String> selectors, String weight) {
+        var weightRule = StringUtils.isBlank(weight) ? ""
+            : "font-weight:" + weight.trim() + " !important;";
         return ":root{" + CSS_VARIABLE + ":" + defaultFamily + "}"
             + ":where(" + String.join(",", selectors) + ")"
             + "{font-family:var(" + CSS_VARIABLE + ") !important;" + weightRule + "}";
@@ -141,7 +140,6 @@ public class FontsService {
                                 List<String> cssUrls,
                                 String defaultFont,
                                 List<String> applySelectors,
-                                String fontWeight,
                                 String styleText,
                                 Widget widget) {
     }

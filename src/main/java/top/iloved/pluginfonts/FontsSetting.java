@@ -23,7 +23,6 @@ public final class FontsSetting {
     }
 
     public record Basic(String defaultFont,
-                        String fontWeight,
                         Boolean loadAllEnabled,
                         List<AcceleratorRule> acceleratorRules,
                         Boolean widgetEnabled,
@@ -32,7 +31,7 @@ public final class FontsSetting {
                         String applySelectors) {
 
         public static Basic defaultBasic() {
-            return new Basic(THEME_DEFAULT, "", true, List.of(), true,
+            return new Basic(THEME_DEFAULT, true, List.of(), true,
                 "bottom-right", "切换字体", "body");
         }
     }
@@ -48,6 +47,7 @@ public final class FontsSetting {
                            String family,
                            String source,
                            String cssUrl,
-                           Boolean enabled) {
+                           Boolean enabled,
+                           String weight) {
     }
 }

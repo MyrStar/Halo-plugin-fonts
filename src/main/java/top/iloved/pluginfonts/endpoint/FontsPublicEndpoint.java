@@ -50,7 +50,6 @@ public class FontsPublicEndpoint implements CustomEndpoint {
             .map(resolved -> new PublicFontsPayload(
                 resolved.defaultFont(),
                 resolved.applySelectors(),
-                resolved.fontWeight(),
                 resolved.widget(),
                 resolved.enabledFonts()))
             .flatMap(payload -> ServerResponse.ok()

@@ -9,7 +9,6 @@ import top.iloved.pluginfonts.FontsSetting.FontItem;
  */
 public record PublicFontsPayload(String defaultFont,
                                  List<String> applySelectors,
-                                 String fontWeight,
                                  Widget widget,
                                  List<FontItem> fonts) {
 }

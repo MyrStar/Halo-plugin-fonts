@@ -52,6 +52,7 @@ function onAdd(preset: PresetFont) {
     source: "preset",
     cssUrl: preset.cssUrl,
     enabled: true,
+    weight: preset.weight || "",
   });
 }
 
@@ -114,7 +115,10 @@ onMounted(fetchPresets);
         class="picker-card"
         @mouseenter="onShow(preset)"
       >
-        <div class="picker-card-preview" :style="{ fontFamily: preset.family }">
+        <div
+          class="picker-card-preview"
+          :style="{ fontFamily: preset.family, fontWeight: preset.weight || undefined }"
+        >
           {{ previewText }}
         </div>
         <div class="picker-card-meta">

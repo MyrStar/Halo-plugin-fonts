@@ -31,8 +31,17 @@ const pickerVisible = ref(false);
 const editorVisible = ref(false);
 const editingFont = ref<FontItem | null>(null);
 
-const editorForm = ref({ displayName: "", family: "", cssUrl: "" });
+const editorForm = ref({ displayName: "", family: "", cssUrl: "", weight: "" });
 const isEditing = computed(() => editingFont.value !== null);
+const isEditingPreset = computed(() => editingFont.value?.source === "preset");
+
+const WEIGHT_OPTIONS = [
+  { value: "", label: "跟随字体默认" },
+  { value: "400", label: "400 - 常规" },
+  { value: "500", label: "500 - 中等" },
+  { value: "600", label: "600 - 半粗" },
+  { value: "700", label: "700 - 粗体" },
+];
 
 async function fetchData() {
   loading.value = true;
@@ -111,19 +120,30 @@ function onPresetAdd(font: FontItem) {
 function openEditor(font?: FontItem) {
   editingFont.value = font ?? null;
   editorForm.value = font
-    ? { displayName: font.displayName, family: font.family, cssUrl: font.cssUrl }
-    : { displayName: "", family: "", cssUrl: "" };
+    ? {
+        displayName: font.displayName,
+        family: font.family,
+        cssUrl: font.cssUrl,
+        weight: font.weight || "",
+      }
+    : { displayName: "", family: "", cssUrl: "", weight: "" };
   editorVisible.value = true;
 }
 
 async function onEditorSubmit() {
-  const { displayName, family, cssUrl } = editorForm.value;
+  const { displayName, family, cssUrl, weight } = editorForm.value;
   if (!displayName.trim() || !family.trim() || !cssUrl.trim()) {
     Toast.warning("请填写完整的字体信息");
     return;
   }
   if (editingFont.value) {
     const target = editingFont.value;
+    target.weight = weight;
+    if (target.source === "preset") {
+      editorVisible.value = false;
+      await persist(`已更新「${target.displayName}」的字重`);
+      return;
+    }
     target.displayName = displayName.trim();
     target.family = family.trim();
     target.cssUrl = cssUrl.trim();
@@ -138,6 +158,7 @@ async function onEditorSubmit() {
       source: "custom",
       cssUrl: cssUrl.trim(),
       enabled: true,
+      weight,
     };
     fonts.value = [...fonts.value, font];
     editorVisible.value = false;
@@ -187,13 +208,14 @@ onMounted(fetchData);
           <div
             class="font-preview"
             :class="{ 'font-disabled': !font.enabled }"
-            :style="{ fontFamily: font.family }"
+            :style="{ fontFamily: font.family, fontWeight: font.weight || undefined }"
           >
             {{ previewText }}
           </div>
           <div class="font-meta">
             <span class="font-name">{{ font.displayName }}</span>
             <VTag>{{ font.source === "preset" ? "预设" : "自定义" }}</VTag>
+            <VTag v-if="font.weight">字重 {{ font.weight }}</VTag>
             <VTag v-if="defaultFont === font.name" class="font-default-tag">默认字体</VTag>
             <VTag v-if="!font.enabled">已停用</VTag>
           </div>
@@ -228,7 +250,7 @@ onMounted(fetchData);
           >
             恢复跟随主题
           </VButton>
-          <VButton v-if="font.source === 'custom'" size="sm" :disabled="saving" @click="openEditor(font)">
+          <VButton size="sm" :disabled="saving" @click="openEditor(font)">
             编辑
           </VButton>
           <VButton size="sm" type="danger" :disabled="saving" @click="onRemove(font)">
@@ -248,14 +270,21 @@ onMounted(fetchData);
     <div v-if="editorVisible" class="editor-mask" @click.self="editorVisible = false">
       <div class="editor-modal">
         <div class="editor-modal-header">
-          <span class="editor-modal-title">{{ isEditing ? "编辑自定义字体" : "添加自定义字体" }}</span>
+          <span class="editor-modal-title">
+            {{ isEditing ? (isEditingPreset ? "编辑预设字体" : "编辑自定义字体") : "添加自定义字体" }}
+          </span>
           <button type="button" class="editor-modal-close" @click="editorVisible = false">&times;</button>
         </div>
         <div class="editor-modal-body">
           <div class="editor-form">
         <div class="editor-field">
           <label class="editor-label">字体名称</label>
-          <input v-model="editorForm.displayName" class="editor-input" placeholder="例如：得意黑" />
+          <input
+            v-model="editorForm.displayName"
+            class="editor-input"
+            placeholder="例如：得意黑"
+            :disabled="isEditingPreset"
+          />
         </div>
         <div class="editor-field">
           <label class="editor-label">font-family 值</label>
@@ -263,6 +292,7 @@ onMounted(fetchData);
             v-model="editorForm.family"
             class="editor-input"
             placeholder="例如：'Smiley Sans', sans-serif"
+            :disabled="isEditingPreset"
           />
           <span class="editor-help">CSS font-family 的完整取值，建议带通用回退字体</span>
         </div>
@@ -272,8 +302,20 @@ onMounted(fetchData);
             v-model="editorForm.cssUrl"
             class="editor-input"
             placeholder="https://.../font.css（@font-face 定义所在的样式表地址）"
+            :disabled="isEditingPreset"
           />
           <span class="editor-help">保存后会应用「全局设置」中的加速地址规则</span>
+        </div>
+        <div class="editor-field">
+          <label class="editor-label">字重</label>
+          <select v-model="editorForm.weight" class="editor-input">
+            <option v-for="option in WEIGHT_OPTIONS" :key="option.value" :value="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+          <span class="editor-help">
+            字体偏细看不清时可在此加粗，仅作用于该字体。仅对加载了对应字重的字体完全生效，单字重字体由浏览器合成加粗
+          </span>
         </div>
       </div>
           </div>

@@ -57,22 +57,28 @@
       return;
     }
 
-    ensureOverrideRule(payload);
+    ensureOverrideRule(payload, font);
     document.documentElement.style.setProperty(CSS_VARIABLE, font.family);
     try { localStorage.setItem(STORAGE_KEY, name); } catch (e) {}
   }
 
-  /** 若页面没有插件注入的覆盖规则（默认字体为跟随主题），由浮窗动态补充 */
-  function ensureOverrideRule(payload) {
-    if (document.getElementById(DYNAMIC_STYLE_ID)) return;
+  /** 由浮窗动态补充覆盖规则（追加在 head 末尾，优先级高于服务端注入的规则），
+   * 字重按所选字体自身配置，切换时同步更新 */
+  function ensureOverrideRule(payload, font) {
     var selectors = (payload.applySelectors && payload.applySelectors.length)
       ? payload.applySelectors.join(",") : "body";
-    var weightRule = payload.fontWeight
-      ? "font-weight:" + payload.fontWeight + " !important;" : "";
-    var style = document.createElement("style");
-    style.id = DYNAMIC_STYLE_ID;
-    style.textContent = ":where(" + selectors + "){font-family:var("
+    var weightRule = font.weight
+      ? "font-weight:" + font.weight + " !important;" : "";
+    var text = ":where(" + selectors + "){font-family:var("
       + CSS_VARIABLE + ") !important;" + weightRule + "}";
+    var style = document.getElementById(DYNAMIC_STYLE_ID);
+    if (style) {
+      style.textContent = text;
+      return;
+    }
+    style = document.createElement("style");
+    style.id = DYNAMIC_STYLE_ID;
+    style.textContent = text;
     document.head.appendChild(style);
   }
 
