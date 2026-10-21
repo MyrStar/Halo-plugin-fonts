@@ -277,6 +277,9 @@ onMounted(fetchData);
         </div>
         <div class="editor-modal-body">
           <div class="editor-form">
+        <div v-if="isEditingPreset" class="editor-notice">
+          预设字体的名称、font-family 与 CSS 地址不可修改，仅可调整字重
+        </div>
         <div class="editor-field">
           <label class="editor-label">字体名称</label>
           <input
@@ -284,6 +287,7 @@ onMounted(fetchData);
             class="editor-input"
             placeholder="例如：得意黑"
             :disabled="isEditingPreset"
+            :title="isEditingPreset ? '预设字体不可修改名称' : undefined"
           />
         </div>
         <div class="editor-field">
@@ -293,6 +297,7 @@ onMounted(fetchData);
             class="editor-input"
             placeholder="例如：'Smiley Sans', sans-serif"
             :disabled="isEditingPreset"
+            :title="isEditingPreset ? '预设字体不可修改 font-family' : undefined"
           />
           <span class="editor-help">CSS font-family 的完整取值，建议带通用回退字体</span>
         </div>
@@ -303,6 +308,7 @@ onMounted(fetchData);
             class="editor-input"
             placeholder="https://.../font.css（@font-face 定义所在的样式表地址）"
             :disabled="isEditingPreset"
+            :title="isEditingPreset ? '预设字体不可修改 CSS 地址' : undefined"
           />
           <span class="editor-help">保存后会应用「全局设置」中的加速地址规则</span>
         </div>
@@ -521,6 +527,22 @@ onMounted(fetchData);
   display: flex;
   flex-direction: column;
   gap: 14px;
+}
+
+.editor-notice {
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.editor-input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
 }
 
 .editor-field {
