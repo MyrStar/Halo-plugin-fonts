@@ -176,13 +176,13 @@ onMounted(fetchData);
 
     <VLoading v-if="loading" />
 
-    <VEmpty v-else-if="!fonts.length" title="还没有字体" message="从预设库添加或创建自定义字体开始使用">
+    <VEmpty v-if="!loading && !fonts.length" title="还没有字体" message="从预设库添加或创建自定义字体开始使用">
       <template #actions>
         <VButton type="secondary" @click="pickerVisible = true">从预设库添加</VButton>
       </template>
     </VEmpty>
 
-    <div v-else class="font-list">
+    <div v-if="!loading && fonts.length" class="font-list">
       <VCard v-for="font in fonts" :key="font.name" class="font-card">
         <div class="font-card-main">
           <div

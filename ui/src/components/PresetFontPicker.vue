@@ -96,12 +96,12 @@ onMounted(fetchPresets);
 
     <div v-if="loading" class="picker-loading">加载中...</div>
 
-    <div v-else-if="loadError" class="picker-loading">
+    <div v-if="!loading && loadError" class="picker-loading">
       <p>预设字体库加载失败，请检查插件是否已启用或刷新重试</p>
       <VButton size="sm" @click="fetchPresets">重试</VButton>
     </div>
 
-    <div v-else class="picker-grid">
+    <div v-if="!loading && !loadError" class="picker-grid">
       <div
         v-for="preset in filtered"
         :key="preset.id"
