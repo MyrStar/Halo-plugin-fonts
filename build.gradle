@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id "run.halo.plugin.devtools" version "0.8.0"
+}
+
+group = 'top.iloved'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    maven { url = uri('https://maven.aliyun.com/repository/public') }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly platform("run.halo.tools.platform:plugin:2.23.0")
+    compileOnly "run.halo.app:api"
+    compileOnly "org.projectlombok:lombok:1.18.36"
+    annotationProcessor "org.projectlombok:lombok:1.18.36"
+}
+
+halo {
+    version = '2.26.0'
+    superAdminUsername = 'admin'
+    superAdminPassword = 'P@88w0rd'
+    externalUrl = 'http://localhost:8090'
+}
+
+def uiDir = file("${projectDir}/ui")
+def uiDistDir = file("${uiDir}/build/dist")
+
+tasks.register('buildFrontend', Exec) {
+    group = 'build'
+    description = 'Build the console UI with pnpm.'
+    workingDir uiDir
+    commandLine org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem.isWindows() ?
+        ['cmd', '/c', 'pnpm', 'build'] : ['pnpm', 'build']
+    inputs.dir file("${uiDir}/src")
+    inputs.file file("${uiDir}/package.json")
+    outputs.dir uiDistDir
+}
+
+processResources {
+    dependsOn tasks.named('buildFrontend')
+    from(uiDistDir) {
+        into 'console'
+    }
+}

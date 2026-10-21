@@ -1,0 +1,9 @@
+.gradle/
+build/
+out/
+node_modules/
+ui/build/
+ui/node_modules/
+*.log
+.idea/
+.vscode/
