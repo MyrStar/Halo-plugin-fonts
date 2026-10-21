@@ -251,7 +251,6 @@ onMounted(fetchData);
       :visible="true"
       :title="isEditing ? '编辑自定义字体' : '添加自定义字体'"
       :width="560"
-      mount-to-body
       @close="editorVisible = false"
     >
       <div class="editor-form">

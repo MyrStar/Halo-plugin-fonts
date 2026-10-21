@@ -74,7 +74,7 @@ onMounted(fetchPresets);
 </script>
 
 <template>
-  <VModal :visible="true" title="从预设库添加字体" :width="720" mount-to-body @close="emit('close')">
+  <VModal :visible="true" title="从预设库添加字体" :width="720" @close="emit('close')">
     <div class="picker-toolbar">
       <input
         v-model="previewText"

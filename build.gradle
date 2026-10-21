@@ -20,7 +20,6 @@ repositories {
 dependencies {
     compileOnly platform("run.halo.tools.platform:plugin:2.23.0")
     compileOnly "run.halo.app:api"
-    compileOnly "org.yaml:snakeyaml"
     compileOnly "org.projectlombok:lombok:1.18.36"
     annotationProcessor "org.projectlombok:lombok:1.18.36"
 }

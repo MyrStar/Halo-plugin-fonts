@@ -1,64 +1,43 @@
 package top.iloved.pluginfonts;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  * 内置预设字体库提供者。
  *
- * <p>预设数据位于 classpath 的 presets/fonts.yaml，使用 SnakeYAML 解析以避免依赖
- * Jackson（Halo 2.23 起从 Jackson 2 迁移到 Jackson 3，跨版本引用存在风险）。
- * 预设为静态数据，首次访问后缓存。
+ * <p>预设直接以 Java 代码定义，避免引入 YAML/JSON 解析依赖（Halo 2.23 起从 Jackson 2
+ * 迁移到 Jackson 3，跨版本引用第三方解析库存在运行时风险）。预设均为免费可商用字体。
  */
-@Slf4j
 @Component
 public class PresetFontsProvider {
 
-    private volatile List<PresetFont> presets;
+    private static final List<PresetFont> PRESETS = List.of(
+        new PresetFont("noto-sans-sc", "思源黑体", "'Noto Sans SC', sans-serif",
+            "https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap",
+            "黑体"),
+        new PresetFont("noto-serif-sc", "思源宋体", "'Noto Serif SC', serif",
+            "https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap",
+            "宋体"),
+        new PresetFont("lxgw-wenkai", "霞鹜文楷", "'LXGW WenKai Screen', sans-serif",
+            "https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.7.0/style.css",
+            "楷体"),
+        new PresetFont("zcool-xiaowei", "站酷小薇体", "'ZCOOL XiaoWei', serif",
+            "https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap",
+            "美术体"),
+        new PresetFont("zcool-kuaile", "站酷快乐体", "'ZCOOL KuaiLe', sans-serif",
+            "https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap",
+            "美术体"),
+        new PresetFont("ma-shan-zheng", "马善政毛笔", "'Ma Shan Zheng', cursive",
+            "https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&display=swap",
+            "手写体"),
+        new PresetFont("long-cang", "龙藏体", "'Long Cang', cursive",
+            "https://fonts.googleapis.com/css2?family=Long+Cang&display=swap",
+            "手写体")
+    );
 
     public List<PresetFont> presets() {
-        var result = presets;
-        if (result == null) {
-            synchronized (this) {
-                result = presets;
-                if (result == null) {
-                    result = load();
-                    presets = result;
-                }
-            }
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<PresetFont> load() {
-        var resource = new ClassPathResource("presets/fonts.yaml");
-        try (var in = resource.getInputStream()) {
-            var yaml = new Yaml();
-            List<Map<String, Object>> items = yaml.load(
-                new String(in.readAllBytes(), StandardCharsets.UTF_8));
-            if (items == null) {
-                return List.of();
-            }
-            return items.stream()
-                .map(item -> new PresetFont(
-                    (String) item.get("id"),
-                    (String) item.get("displayName"),
-                    (String) item.get("family"),
-                    (String) item.get("cssUrl"),
-                    (String) item.get("category")))
-                .toList();
-        } catch (IOException e) {
-            log.error("Failed to load preset fonts from presets/fonts.yaml", e);
-            throw new UncheckedIOException(e);
-        }
+        return PRESETS;
     }
 
     public record PresetFont(String id, String displayName, String family,
