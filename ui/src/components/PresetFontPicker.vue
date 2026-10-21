@@ -16,6 +16,7 @@ const emit = defineEmits<{
 
 const presets = ref<PresetFont[]>([]);
 const loading = ref(false);
+const loadError = ref(false);
 const activeCategory = ref("全部");
 const previewText = ref("永和九年，岁在癸丑 The quick brown fox 0123456789");
 
@@ -54,22 +55,26 @@ function onAdd(preset: PresetFont) {
   });
 }
 
-onMounted(async () => {
+async function fetchPresets() {
   loading.value = true;
+  loadError.value = false;
   try {
     const { data } = await listPresets();
     presets.value = data;
   } catch (e) {
     console.error("Failed to fetch preset fonts", e);
+    loadError.value = true;
     Toast.error("获取预设字体库失败");
   } finally {
     loading.value = false;
   }
-});
+}
+
+onMounted(fetchPresets);
 </script>
 
 <template>
-  <VModal title="从预设库添加字体" :width="720" @close="emit('close')">
+  <VModal :visible="true" title="从预设库添加字体" :width="720" mount-to-body @close="emit('close')">
     <div class="picker-toolbar">
       <input
         v-model="previewText"
@@ -90,6 +95,11 @@ onMounted(async () => {
     </div>
 
     <div v-if="loading" class="picker-loading">加载中...</div>
+
+    <div v-else-if="loadError" class="picker-loading">
+      <p>预设字体库加载失败，请检查插件是否已启用或刷新重试</p>
+      <VButton size="sm" @click="fetchPresets">重试</VButton>
+    </div>
 
     <div v-else class="picker-grid">
       <div
