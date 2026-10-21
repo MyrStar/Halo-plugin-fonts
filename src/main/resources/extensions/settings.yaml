@@ -1,0 +1,76 @@
+apiVersion: v1alpha1
+kind: Setting
+metadata:
+  name: plugin-fonts-settings
+spec:
+  forms:
+    - group: basic
+      label: 全局设置
+      formSchema:
+        - $formkit: select
+          name: defaultFont
+          label: 默认字体
+          help: 访客未手动切换时全站使用的字体。如需选择具体字体，请前往左侧「字体管理」页面操作，此处仅支持恢复为跟随主题。
+          value: __theme__
+          options:
+            - value: __theme__
+              label: 跟随主题（不覆盖主题字体）
+        - $formkit: checkbox
+          name: loadAllEnabled
+          label: 预加载所有启用字体的 CSS
+          help: 开启后访客切换字体无网络延迟。中文字体 CDN 一般按 unicode-range 分包加载，首屏仅下载实际用到的分片，开销可控。
+          value: true
+        - $formkit: repeater
+          name: acceleratorRules
+          label: 字体加速地址规则
+          help: 注入页面前对字体 CSS 地址做主机替换。注意：镜像站需会改写 CSS 内部的字体文件地址（如 loli.net 系镜像），仅替换 CSS 入口主机才有效。
+          value:
+            - from: fonts.googleapis.com
+              to: fonts.loli.net
+              enabled: false
+            - from: fonts.gstatic.com
+              to: gstatic.loli.net
+              enabled: false
+            - from: cdn.jsdelivr.net
+              to: fastly.jsdelivr.net
+              enabled: false
+          children:
+            - $formkit: text
+              name: from
+              label: 原始主机
+              validation: required
+            - $formkit: text
+              name: to
+              label: 替换为
+              validation: required
+            - $formkit: checkbox
+              name: enabled
+              label: 启用
+              value: true
+        - $formkit: checkbox
+          name: widgetEnabled
+          label: 启用前台字体切换浮窗
+          help: 开启后访客可通过页面上的悬浮按钮在已启用的字体间切换，选择会记忆在访客浏览器中。
+          value: true
+        - $formkit: select
+          name: widgetPosition
+          label: 浮窗位置
+          value: bottom-right
+          options:
+            - value: bottom-right
+              label: 右下角
+            - value: bottom-left
+              label: 左下角
+            - value: top-right
+              label: 右上角
+            - value: top-left
+              label: 左上角
+        - $formkit: text
+          name: widgetTitle
+          label: 浮窗按钮提示文字
+          value: 切换字体
+        - $formkit: textarea
+          name: applySelectors
+          label: 字体作用选择器
+          help: 每行一个 CSS 选择器，字体将应用到这些元素。请勿包含 code、pre 等代码元素，避免污染等宽字体。
+          value: "body\np\narticle\n.post-content"

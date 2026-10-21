@@ -1,0 +1,33 @@
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: plugin-fonts-role-template
+  labels:
+    halo.run/hidden: "true"
+  annotations:
+    rbac.authorization.halo.run/aggregated-to-admin: "true"
+    rbac.authorization.halo.run/module: "字体管理"
+    rbac.authorization.halo.run/display-name: "字体管理"
+    rbac.authorization.halo.run/ui-permissions: |
+      ["plugin:fonts:manage"]
+rules:
+  - apiGroups: [pluginfonts.console.halo.run]
+    resources: ["*"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "update"]
+---
+apiVersion: v1alpha1
+kind: Role
+metadata:
+  name: plugin-fonts-anonymous-role-template
+  labels:
+    halo.run/hidden: "true"
+    halo.run/role-template: "true"
+  annotations:
+    rbac.authorization.halo.run/aggregate-to-anonymous: "true"
+rules:
+  - apiGroups: [api.pluginfonts.halo.run]
+    resources: ["fonts"]
+    verbs: ["get", "list"]

@@ -1,0 +1,20 @@
+apiVersion: plugin.halo.run/v1alpha1
+kind: Plugin
+metadata:
+  name: PluginFonts
+spec:
+  enabled: true
+  requires: ">=2.22.0"
+  author:
+    name: Eternal
+    website: https://iloved.top
+  logo: logo.svg
+  settingName: plugin-fonts-settings
+  configMapName: plugin-fonts-configmap
+  displayName: 字体管理
+  description: 全局管理站点字体，内置常用免费可商用字体库，支持自定义字体地址与 CDN 加速替换，并为访客提供前台字体切换浮窗。
+  homepage: https://iloved.top
+  repo: https://github.com/MyrStar/Halo-plugin-fonts
+  issues: https://github.com/MyrStar/Halo-plugin-fonts/issues
+  license:
+    - name: "GPL-3.0"
