@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Toast, VButton, VTag } from "@halo-dev/components";
 import { computed, onMounted, ref } from "vue";
-import { listPresets } from "../api";
+import { listPresets, listRecommended } from "../api";
 import type { FontItem, PresetFont } from "../types";
 import { loadFontCss } from "../utils/font-loader";
 
@@ -14,22 +14,33 @@ const emit = defineEmits<{
   (event: "add", font: FontItem): void;
 }>();
 
+const activeTab = ref<"preset" | "recommended">("preset");
 const presets = ref<PresetFont[]>([]);
+const recommended = ref<PresetFont[]>([]);
 const loading = ref(false);
 const loadError = ref(false);
 const activeCategory = ref("全部");
 const previewText = ref("永和九年，岁在癸丑 The quick brown fox 0123456789");
 
+const currentList = computed(() =>
+  activeTab.value === "preset" ? presets.value : recommended.value
+);
+
 const categories = computed(() => {
-  const set = new Set(presets.value.map((p) => p.category).filter(Boolean));
+  const set = new Set(currentList.value.map((p) => p.category).filter(Boolean));
   return ["全部", ...Array.from(set)];
 });
 
 const filtered = computed(() =>
   activeCategory.value === "全部"
-    ? presets.value
-    : presets.value.filter((p) => p.category === activeCategory.value)
+    ? currentList.value
+    : currentList.value.filter((p) => p.category === activeCategory.value)
 );
+
+function switchTab(tab: "preset" | "recommended") {
+  activeTab.value = tab;
+  activeCategory.value = "全部";
+}
 
 function isAdded(preset: PresetFont) {
   return props.existingNames.includes(preset.id);
@@ -49,7 +60,7 @@ function onAdd(preset: PresetFont) {
     name: preset.id,
     displayName: preset.displayName,
     family: preset.family,
-    source: "preset",
+    source: activeTab.value === "preset" ? "preset" : "custom",
     cssUrl: preset.cssUrl,
     enabled: true,
     weight: preset.weight || "",
@@ -60,12 +71,16 @@ async function fetchPresets() {
   loading.value = true;
   loadError.value = false;
   try {
-    const { data } = await listPresets();
-    presets.value = data;
+    const [presetsRes, recommendedRes] = await Promise.all([
+      listPresets(),
+      listRecommended(),
+    ]);
+    presets.value = presetsRes.data;
+    recommended.value = recommendedRes.data;
   } catch (e) {
-    console.error("Failed to fetch preset fonts", e);
+    console.error("Failed to fetch font libraries", e);
     loadError.value = true;
-    Toast.error("获取预设字体库失败");
+    Toast.error("获取字体库失败");
   } finally {
     loading.value = false;
   }
@@ -78,11 +93,32 @@ onMounted(fetchPresets);
   <div class="picker-mask" @click.self="emit('close')">
     <div class="picker-modal">
       <div class="picker-modal-header">
-        <span class="picker-modal-title">从预设库添加字体</span>
+        <span class="picker-modal-title">添加字体</span>
         <button type="button" class="picker-modal-close" @click="emit('close')">&times;</button>
       </div>
       <div class="picker-body">
         <div class="picker-toolbar">
+      <div class="picker-tabs">
+        <button
+          type="button"
+          class="picker-tab"
+          :class="{ 'picker-tab-active': activeTab === 'preset' }"
+          @click="switchTab('preset')"
+        >
+          内置预设
+        </button>
+        <button
+          type="button"
+          class="picker-tab"
+          :class="{ 'picker-tab-active': activeTab === 'recommended' }"
+          @click="switchTab('recommended')"
+        >
+          推荐字体
+        </button>
+      </div>
+      <div v-if="activeTab === 'recommended'" class="picker-tab-hint">
+        推荐字体来自社区 CDN（可免费商用），添加后为「自定义」字体，名称与地址均可修改
+      </div>
       <input
         v-model="previewText"
         class="picker-preview-input"
@@ -104,7 +140,7 @@ onMounted(fetchPresets);
     <div v-if="loading" class="picker-loading">加载中...</div>
 
     <div v-if="!loading && loadError" class="picker-loading">
-      <p>预设字体库加载失败，请检查插件是否已启用或刷新重试</p>
+      <p>字体库加载失败，请检查插件是否已启用或刷新重试</p>
       <VButton size="sm" @click="fetchPresets">重试</VButton>
     </div>
 
@@ -214,6 +250,37 @@ onMounted(fetchPresets);
   flex-direction: column;
   gap: 10px;
   margin-bottom: 14px;
+}
+
+.picker-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  width: fit-content;
+}
+
+.picker-tab {
+  padding: 5px 16px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 13px;
+  color: #6b7280;
+  cursor: pointer;
+}
+
+.picker-tab-active {
+  background: #fff;
+  color: #111827;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.picker-tab-hint {
+  font-size: 12px;
+  color: #9ca3af;
 }
 
 .picker-preview-input {

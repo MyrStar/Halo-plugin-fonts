@@ -54,8 +54,56 @@ public class PresetFontsProvider {
             "手写体", "500")
     );
 
+    /**
+     * 推荐字体库：来自 cn-fontsource（中文网字计划，按 unicode-range 分包）与 npm CDN
+     * 的免费可商用字体。与内置预设不同，推荐字体添加后为「自定义」来源，名称与地址
+     * 均可修改（CDN 地址可能变动，允许用户自行换源）。
+     */
+    private static final List<PresetFont> RECOMMENDED = List.of(
+        new PresetFont("rec-smiley-sans", "得意黑", "'Smiley Sans Oblique', sans-serif",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-smiley-sans-oblique-regular@1.0.1/font.css",
+            "美术体", ""),
+        new PresetFont("rec-alimama-dongfangdakai", "阿里妈妈东方大楷", "'Alimama DongFangDaKai', serif",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-alimama-dong-fang-da-kai-regular@1.0.3/font.css",
+            "书法体", ""),
+        new PresetFont("rec-dingtalk-jinbuti", "钉钉进步体", "'DingTalk JinBuTi', sans-serif",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-ding-talk-jin-bu-ti-regular@1.0.3/font.css",
+            "黑体", ""),
+        new PresetFont("rec-lxgw-neo-xihei", "霞鹜新晰黑", "'LXGW Neo XiHei', sans-serif",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-neo-xi-hei-regular@1.0.1/font.css",
+            "黑体", ""),
+        new PresetFont("rec-lxgw-marker-gothic", "霞鹜漫黑", "'LXGW Marker Gothic', sans-serif",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-lxgw-marker-gothic-regular@1.0.1/font.css",
+            "黑体", ""),
+        new PresetFont("rec-yozai", "悠哉字体", "'Yozai', cursive",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-yozai-regular@1.0.9/font.css",
+            "手写体", ""),
+        new PresetFont("rec-xiaolai", "小赖字体", "'Xiaolai SC', cursive",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-xiaolai-sc-regular@1.0.2/font.css",
+            "手写体", ""),
+        new PresetFont("rec-honglei-xingshu", "鸿雷行书", "'hongleixingshu', cursive",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-hongleixingshu-regular@1.0.7/font.css",
+            "手写体", "500"),
+        new PresetFont("rec-maoken-zhuyuan", "猫啃珠圆体", "'MaokenZhuyuanTi', sans-serif",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-maoken-zhuyuan-ti-regular@1.0.1/font.css",
+            "圆体", ""),
+        new PresetFont("rec-975-maru", "975 圆体", "'975Maru SC', sans-serif",
+            "https://cdn.jsdelivr.net/npm/cn-fontsource-975-maru-sc-regular@1.0.1/font.css",
+            "圆体", ""),
+        new PresetFont("rec-misans", "MiSans", "'MiSans', sans-serif",
+            "https://cdn.jsdelivr.net/npm/misans@5.0.0/lib/Normal/MiSans-Regular.min.css",
+            "黑体", ""),
+        new PresetFont("rec-lxgw-wenkai", "霞鹜文楷（原版）", "'LXGW WenKai', serif",
+            "https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/lxgwwenkai-regular.css",
+            "楷体", "")
+    );
+
     public List<PresetFont> presets() {
         return PRESETS;
+    }
+
+    public List<PresetFont> recommended() {
+        return RECOMMENDED;
     }
 
     public record PresetFont(String id, String displayName, String family,

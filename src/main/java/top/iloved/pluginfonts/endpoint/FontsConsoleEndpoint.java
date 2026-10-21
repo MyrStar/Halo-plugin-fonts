@@ -62,6 +62,11 @@ public class FontsConsoleEndpoint implements CustomEndpoint {
                 .description("List built-in preset fonts.")
                 .tag(tag)
                 .response(responseBuilder().implementation(PresetFont.class)))
+            .GET("presets/recommended", this::listRecommended, builder -> builder
+                .operationId("ListRecommendedFonts")
+                .description("List recommended third-party fonts (added as custom fonts).")
+                .tag(tag)
+                .response(responseBuilder().implementation(PresetFont.class)))
             .GET("fonts", this::listFonts, builder -> builder
                 .operationId("ListFonts")
                 .description("List configured fonts.")
@@ -97,6 +102,10 @@ public class FontsConsoleEndpoint implements CustomEndpoint {
 
     private Mono<ServerResponse> listPresets(ServerRequest request) {
         return ServerResponse.ok().bodyValue(presetFontsProvider.presets());
+    }
+
+    private Mono<ServerResponse> listRecommended(ServerRequest request) {
+        return ServerResponse.ok().bodyValue(presetFontsProvider.recommended());
     }
 
     private Mono<ServerResponse> listFonts(ServerRequest request) {

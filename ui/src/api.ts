@@ -7,6 +7,10 @@ export function listPresets() {
   return axiosInstance.get<PresetFont[]>(`${base}/presets`);
 }
 
+export function listRecommended() {
+  return axiosInstance.get<PresetFont[]>(`${base}/presets/recommended`);
+}
+
 export function listFonts() {
   return axiosInstance.get<Fonts>(`${base}/fonts`);
 }
