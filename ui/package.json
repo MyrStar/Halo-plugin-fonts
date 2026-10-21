@@ -14,7 +14,7 @@
     "vue": "^3.5.33"
   },
   "devDependencies": {
-    "@halo-dev/ui-plugin-bundler-kit": "^2.26.0",
+    "@halo-dev/ui-plugin-bundler-kit": "2.26.0",
     "@iconify-json/tabler": "^1.2.10",
     "@vitejs/plugin-vue": "^6.0.8",
     "typescript": "~5.8.3",

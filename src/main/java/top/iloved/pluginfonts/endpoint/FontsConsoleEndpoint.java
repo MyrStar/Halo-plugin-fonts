@@ -119,7 +119,7 @@ public class FontsConsoleEndpoint implements CustomEndpoint {
         var normalized = new Fonts(fontList);
         return configMap()
             .flatMap(configMap -> {
-                var data = configMap.getData();
+                var data = dataOf(configMap);
                 data.put(FontsSetting.FONTS_GROUP, JsonUtils.objectToJson(normalized));
                 return saveConfigMap(configMap).thenReturn(normalized);
             });
@@ -147,7 +147,7 @@ public class FontsConsoleEndpoint implements CustomEndpoint {
     private Mono<Void> persistDefaultFont(String name) {
         return configMap()
             .flatMap(configMap -> {
-                var data = configMap.getData();
+                var data = dataOf(configMap);
                 Map<String, Object> basic = new HashMap<>();
                 var basicJson = data.get(FontsSetting.BASIC_GROUP);
                 if (basicJson != null && !basicJson.isBlank()) {
@@ -169,6 +169,13 @@ public class FontsConsoleEndpoint implements CustomEndpoint {
                 configMap.setData(new HashMap<>());
                 return Mono.just(configMap);
             }));
+    }
+
+    private static Map<String, String> dataOf(ConfigMap configMap) {
+        if (configMap.getData() == null) {
+            configMap.setData(new HashMap<>());
+        }
+        return configMap.getData();
     }
 
     private Mono<ConfigMap> saveConfigMap(ConfigMap configMap) {

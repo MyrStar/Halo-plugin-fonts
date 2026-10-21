@@ -55,7 +55,7 @@ public class FontsHeadProcessor implements TemplateHeadProcessor {
                     model.add(factory.createOpenElementTag("script",
                         Map.of("defer", "", "src", ASSETS_BASE + "/font-switcher.js",
                             "data-plugin-fonts", ""),
-                        AttributeValueQuotes.DOUBLE));
+                        AttributeValueQuotes.DOUBLE, false));
                     model.add(factory.createCloseElementTag("script"));
                 }
             })
@@ -65,7 +65,7 @@ public class FontsHeadProcessor implements TemplateHeadProcessor {
     private static void addStyleElement(IModelFactory factory, IModel model, String css) {
         model.add(factory.createOpenElementTag("style",
             Map.of("type", "text/css", "data-plugin-fonts", ""),
-            AttributeValueQuotes.DOUBLE));
+            AttributeValueQuotes.DOUBLE, false));
         model.add(factory.createText(css));
         model.add(factory.createCloseElementTag("style"));
     }
