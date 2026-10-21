@@ -67,10 +67,12 @@
     if (document.getElementById(DYNAMIC_STYLE_ID)) return;
     var selectors = (payload.applySelectors && payload.applySelectors.length)
       ? payload.applySelectors.join(",") : "body";
+    var weightRule = payload.fontWeight
+      ? "font-weight:" + payload.fontWeight + " !important;" : "";
     var style = document.createElement("style");
     style.id = DYNAMIC_STYLE_ID;
     style.textContent = ":where(" + selectors + "){font-family:var("
-      + CSS_VARIABLE + ") !important}";
+      + CSS_VARIABLE + ") !important;" + weightRule + "}";
     document.head.appendChild(style);
   }
 

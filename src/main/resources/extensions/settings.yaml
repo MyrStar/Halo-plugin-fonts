@@ -15,6 +15,22 @@ spec:
           options:
             - value: __theme__
               label: 跟随主题（不覆盖主题字体）
+        - $formkit: select
+          name: fontWeight
+          label: 全局字重
+          help: 部分字体默认字重偏细时可在此加粗。仅对加载了对应字重的字体完全生效，单字重字体会由浏览器合成加粗。
+          value: ""
+          options:
+            - value: ""
+              label: 跟随字体默认
+            - value: "400"
+              label: 400 - 常规
+            - value: "500"
+              label: 500 - 中等
+            - value: "600"
+              label: 600 - 半粗
+            - value: "700"
+              label: 700 - 粗体
         - $formkit: checkbox
           name: loadAllEnabled
           label: 预加载所有启用字体的 CSS
