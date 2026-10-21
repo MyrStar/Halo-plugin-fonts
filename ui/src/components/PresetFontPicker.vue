@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Toast, VButton, VModal, VTag } from "@halo-dev/components";
+import { Toast, VButton, VTag } from "@halo-dev/components";
 import { computed, onMounted, ref } from "vue";
 import { listPresets } from "../api";
 import type { FontItem, PresetFont } from "../types";
@@ -74,8 +74,14 @@ onMounted(fetchPresets);
 </script>
 
 <template>
-  <VModal :visible="true" title="从预设库添加字体" :width="720" @close="emit('close')">
-    <div class="picker-toolbar">
+  <div class="picker-mask" @click.self="emit('close')">
+    <div class="picker-modal">
+      <div class="picker-modal-header">
+        <span class="picker-modal-title">从预设库添加字体</span>
+        <button type="button" class="picker-modal-close" @click="emit('close')">&times;</button>
+      </div>
+      <div class="picker-body">
+        <div class="picker-toolbar">
       <input
         v-model="previewText"
         class="picker-preview-input"
@@ -126,14 +132,79 @@ onMounted(fetchPresets);
         </VButton>
       </div>
     </div>
-
-    <template #footer>
-      <VButton @click="emit('close')">关闭</VButton>
-    </template>
-  </VModal>
+      </div>
+      <div class="picker-modal-footer">
+        <VButton @click="emit('close')">关闭</VButton>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
+.picker-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.picker-modal {
+  display: flex;
+  flex-direction: column;
+  width: 720px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 96px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.picker-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.picker-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.picker-modal-close {
+  border: none;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.picker-modal-close:hover {
+  color: #374151;
+}
+
+.picker-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 18px;
+}
+
+.picker-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid #f0f0f0;
+}
+
 .picker-toolbar {
   display: flex;
   flex-direction: column;

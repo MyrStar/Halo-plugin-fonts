@@ -5,7 +5,6 @@ import {
   VCard,
   VEmpty,
   VLoading,
-  VModal,
   VPageHeader,
   VSpace,
   VTag,
@@ -246,14 +245,14 @@ onMounted(fetchData);
       @add="onPresetAdd"
     />
 
-    <VModal
-      v-if="editorVisible"
-      :visible="true"
-      :title="isEditing ? '编辑自定义字体' : '添加自定义字体'"
-      :width="560"
-      @close="editorVisible = false"
-    >
-      <div class="editor-form">
+    <div v-if="editorVisible" class="editor-mask" @click.self="editorVisible = false">
+      <div class="editor-modal">
+        <div class="editor-modal-header">
+          <span class="editor-modal-title">{{ isEditing ? "编辑自定义字体" : "添加自定义字体" }}</span>
+          <button type="button" class="editor-modal-close" @click="editorVisible = false">&times;</button>
+        </div>
+        <div class="editor-modal-body">
+          <div class="editor-form">
         <div class="editor-field">
           <label class="editor-label">字体名称</label>
           <input v-model="editorForm.displayName" class="editor-input" placeholder="例如：得意黑" />
@@ -277,17 +276,83 @@ onMounted(fetchData);
           <span class="editor-help">保存后会应用「全局设置」中的加速地址规则</span>
         </div>
       </div>
-      <template #footer>
-        <VSpace>
-          <VButton type="secondary" :loading="saving" @click="onEditorSubmit">保存</VButton>
-          <VButton @click="editorVisible = false">取消</VButton>
-        </VSpace>
-      </template>
-    </VModal>
+          </div>
+        <div class="editor-modal-footer">
+          <VSpace>
+            <VButton type="secondary" :loading="saving" @click="onEditorSubmit">保存</VButton>
+            <VButton @click="editorVisible = false">取消</VButton>
+          </VSpace>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.editor-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.editor-modal {
+  display: flex;
+  flex-direction: column;
+  width: 560px;
+  max-width: calc(100vw - 48px);
+  max-height: calc(100vh - 96px);
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.editor-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.editor-modal-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.editor-modal-close {
+  border: none;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.editor-modal-close:hover {
+  color: #374151;
+}
+
+.editor-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 18px;
+}
+
+.editor-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid #f0f0f0;
+}
+
 .font-manager {
   padding: 16px;
   display: flex;
