@@ -25,7 +25,6 @@ metadata:
   labels:
     halo.run/hidden: "true"
     halo.run/role-template: "true"
-  annotations:
     rbac.authorization.halo.run/aggregate-to-anonymous: "true"
 rules:
   - apiGroups: [api.pluginfonts.halo.run]
